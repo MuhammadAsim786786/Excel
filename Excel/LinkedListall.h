@@ -63,11 +63,20 @@ public:
             row = row->down;
         }
     }
+    int getcolLength() {
+        int size = 0;
+        NewNode* node = first;
+		while (node) {
+			size++;
+			node = node->right;
+		}
+		return size;
+	}
 
     void insertAboveRow() {
-
-        NewNode* rowAdded[5];
-        for (int i = 0; i < 5; i++) {
+        int size = getcolLength();
+		NewNode** rowAdded = new NewNode * [size];
+        for (int i = 0; i < size; i++) {
             rowAdded[i] = new NewNode('*');
         }
 
@@ -77,7 +86,7 @@ public:
             currentActiveRow = currentActiveRow->left;
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < size; i++) {
 
             rowAdded[i]->down = currentActiveRow;
             if (currentActiveRow) {
@@ -87,7 +96,7 @@ public:
             currentActiveRow = currentActiveRow->right;
         }
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < size; i++) {
             if (i > 0) {
                 rowAdded[i]->left = rowAdded[i - 1];
                 rowAdded[i - 1]->right = rowAdded[i];
@@ -107,115 +116,129 @@ public:
             rowAdded[0]->up = prevRow;
         }
     }
+    void insertDownRow() {
+        int size = getcolLength();
+        NewNode** rowAdded = new NewNode * [size];
+        for (int i = 0; i < 5; i++) {
+            rowAdded[i] = new NewNode('*');
+        }
+
+        NewNode* currentActiveRow = currentActive;
+        while (currentActiveRow->left) {
+            currentActiveRow = currentActiveRow->left;
+        }
+
+        for (int i = 0; i < size; i++) {
+            rowAdded[i]->up = currentActiveRow;
+            if (currentActiveRow) {
+                rowAdded[i]->down = currentActiveRow->down;  
+                if (currentActiveRow->down) {
+                    currentActiveRow->down->up = rowAdded[i];  
+                }
+                currentActiveRow->down = rowAdded[i];
+            }
+            currentActiveRow = currentActiveRow->right;
+        }
+
+        for (int i = 0; i < size; i++) {
+            if (i > 0) {
+                rowAdded[i]->left = rowAdded[i - 1];
+                rowAdded[i - 1]->right = rowAdded[i];
+            }
+        }
+    }
+    int getRowLength() {
+        int size = 0;
+		NewNode* node = first;
+		while (node) {
+			size++;
+            node = node->down;
+		}
+        return size;
+	}
+    void insertColumnLeft() {
+        int size = getRowLength();
+        NewNode** columnAdded = new NewNode * [size];
+
+        for (int i = 0; i < size; i++) {
+            columnAdded[i] = new NewNode('*');
+        }
+
+        NewNode* currentActiveColumnTop = currentActive;
+        NewNode* currentActiveColumn = currentActive;
+
+        while (currentActiveColumnTop->up) {
+            currentActiveColumnTop = currentActiveColumnTop->up;
+            currentActiveColumn = currentActiveColumn->up;
+        }
+
+        for (int i = 0; i < size; i++) {
+            currentActiveColumnTop->left = columnAdded[i];
+            columnAdded[i]->right = currentActiveColumnTop;
+
+            if (i > 0) {
+                columnAdded[i]->up = columnAdded[i - 1];
+                columnAdded[i - 1]->down = columnAdded[i];
+            }
+
+            if (currentActiveColumnTop->down) {
+                currentActiveColumnTop = currentActiveColumnTop->down;
+            }
+        }
+
+        if (first == currentActiveColumn) {
+            first = columnAdded[0];
+        }
+    }
+
+    
+    void insertColuuumnRight() {
+		int size = getRowLength();
+        NewNode** columnAdded = new NewNode * [size];
+        for (int i = 0; i < size; i++) {
+            columnAdded[i] = new NewNode('*');
+        }
+
+        NewNode* currentActiveColumn = currentActive;
+        NewNode* currentActiveColumnTop = currentActive;
+
+        while (currentActiveColumnTop->up) {
+            currentActiveColumnTop = currentActiveColumnTop->up;
+        }
+
+        if (currentActiveColumnTop->right == nullptr) {
+            for (int i = 0; i < size; i++) {
+                currentActiveColumnTop->right = columnAdded[i];
+                columnAdded[i]->left = currentActiveColumnTop;
+
+                currentActiveColumnTop = currentActiveColumnTop->down;
+                if (i < size-1) {
+                    columnAdded[i]->down = columnAdded[i + 1];
+                    columnAdded[i + 1]->up = columnAdded[i];
+                }
+            }
+        }
+        else {
+            NewNode* existingRightColumn = currentActiveColumnTop->right;
+
+            for (int i = 0; i < size; i++) {
+                currentActiveColumnTop->right = columnAdded[i];
+                columnAdded[i]->left = currentActiveColumnTop;
+
+                columnAdded[i]->right = existingRightColumn;
+                existingRightColumn->left = columnAdded[i];
+
+                currentActiveColumnTop = currentActiveColumnTop->down;
+                existingRightColumn = existingRightColumn->down;
+                if (i < size-1) {
+                    columnAdded[i]->down = columnAdded[i + 1];
+                    columnAdded[i + 1]->up = columnAdded[i];
+                }
+            }
+        }
+    }
 
    
 };
-
-
-    /*
-    void insertAtFront(int value) {
-        if (Dabba == nullptr) {
-            Dabba = new NewNode();
-            Dabba->data = value;
-            Dabba->next = nullptr;
-            Dabba->prev = nullptr;
-            this->head = Dabba;
-            this->tail = Dabba;
-        }
-        else {
-            NewNode* TempDabba = new NewNode();
-            TempDabba->data = value;
-            TempDabba->next = head;
-            TempDabba->prev = nullptr;
-            this->head = TempDabba;
-
-
-        }
-    }
-    void inserAtBack(int value) {
-        if (Dabba == nullptr) {
-            Dabba = new NewNode();
-            Dabba->data = value;
-            Dabba->next = nullptr;
-            Dabba->prev = nullptr;
-            this->head = Dabba;
-            this->tail = Dabba;
-        }
-        else {
-            NewNode* TempDabba = new NewNode;
-            TempDabba->data = value;
-            TempDabba->next = nullptr;
-            TempDabba->prev = tail;
-            tail->next = TempDabba;
-            tail = TempDabba;
-        }
-    }
-    void deleteAtFirst() {
-        if (Dabba == nullptr) {
-            cout << "List already empty." << endl;
-        }
-        delete[] head->prev;
-
-        head = head->next;
-        head->prev = nullptr;
-    }
-    bool isEmpty() {
-        return Dabba == nullptr;
-    }
-    int size() {
-        NewNode* TempDabba = head;
-        int size = 0;
-        while (TempDabba->next != nullptr) {
-            size++;
-            TempDabba = TempDabba->next;
-        }
-        size++;
-        return size;
-    }
-    void displayList() {
-        NewNode* TempDabba = head;
-
-        while (TempDabba->next != nullptr) {
-            cout << TempDabba->data << " ";
-            TempDabba = TempDabba->next;
-        }
-        cout << TempDabba->data << " " << endl;
-    }
-
-};*/
-/*
-class iterating {
-private:
-    NewNode* Active;
-
-public:
-    iterating(NewNode* Temp) {
-        this->Active = Temp;
-    }
-
-    int& operator*() {
-        return Active->data;
-    }
-
-    iterating& operator++() {
-        if (Active != nullptr) {
-            Active = Active->next;
-        }
-        return *this;
-    }
-
-    iterating& operator--() {
-        if (Active != nullptr) {
-            Active = Active->prev;
-        }
-        return *this;
-    }
-
-    bool isValid() {
-        return Active != nullptr;
-    }
-};
-*/
-
 
 

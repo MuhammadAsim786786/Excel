@@ -117,7 +117,7 @@ int main()
 	}*/
 	
 	
-		LinkingList list;
+		/*LinkingList list;
 
 	
 		cout << "Inserting elements at the front:" << endl;
@@ -157,7 +157,11 @@ int main()
 
 		
 		cout << "Is the list empty? " << (list.isEmpty() ? "Yes" : "No") << endl;
-
-
+		*/
+	Excel miniExcel;
+	miniExcel.displayGrid();
+	miniExcel.insertColumnLeft();
+	system("cls");
+	miniExcel.displayGrid();
 	return 0;
 }
