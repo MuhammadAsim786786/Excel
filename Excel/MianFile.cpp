@@ -160,7 +160,16 @@ int main()
 		*/
 	Excel miniExcel;
 	miniExcel.displayGrid();
-	miniExcel.insertColumnLeft();
+	miniExcel.RemoveColumn();
+	miniExcel.insertDownRow();
+	miniExcel.RemoveColumn();
+	miniExcel.RemoveRow();
+	miniExcel.clearRow();
+	miniExcel.clearColumn();
+
+
+
+
 	system("cls");
 	miniExcel.displayGrid();
 	return 0;

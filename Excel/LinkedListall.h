@@ -51,18 +51,22 @@ public:
         currentActive = first;
     }
 
-    void displayGrid() {
-        NewNode* row = first;
-        while (row) {
-            NewNode* c = row;
-            while (c) {
-                cout << c->data << " ";
-                c = c->right;
+void displayGrid() {
+    NewNode* row = first;
+    while (row) {
+        NewNode* c = row;
+        while (c) {
+            if (c != nullptr) {
+                cout << "[ " << (c->data ? c->data : ' ') << " ] ";
+            } else {
+                cout << "[ NULL ] ";
             }
-            cout << endl;
-            row = row->down;
+            c = c->right;
         }
+        cout << endl;
+        row = row->down;
     }
+}
     int getcolLength() {
         int size = 0;
         NewNode* node = first;
@@ -72,51 +76,47 @@ public:
 		}
 		return size;
 	}
-
     void insertAboveRow() {
+        if (!currentActive) return;
         int size = getcolLength();
-		NewNode** rowAdded = new NewNode * [size];
+        NewNode** rowAdded = new NewNode * [size];
+
+        // Step 1: Initialize each cell in the new row
         for (int i = 0; i < size; i++) {
             rowAdded[i] = new NewNode('*');
         }
 
-
+        // Step 2: Traverse to the leftmost cell of the current active row
         NewNode* currentActiveRow = currentActive;
-        while (currentActiveRow->left) {
+        while (currentActiveRow && currentActiveRow->left) {
             currentActiveRow = currentActiveRow->left;
         }
 
+        // Step 3: Link each cell in the new row with the current row
         for (int i = 0; i < size; i++) {
-
+            // Link downwards to the current active row
             rowAdded[i]->down = currentActiveRow;
             if (currentActiveRow) {
                 currentActiveRow->up = rowAdded[i];
+                currentActiveRow = currentActiveRow->right;
             }
 
-            currentActiveRow = currentActiveRow->right;
-        }
-
-        for (int i = 0; i < size; i++) {
+            // Link horizontally within the new row
             if (i > 0) {
                 rowAdded[i]->left = rowAdded[i - 1];
                 rowAdded[i - 1]->right = rowAdded[i];
             }
         }
 
-        if (first == currentActive) {
+        // Step 4: Update the 'first' pointer if we are adding at the top
+        if (currentActive == first) {
             first = rowAdded[0];
         }
-        else {
 
-            NewNode* prevRow = first;
-            while (prevRow->down) {
-                prevRow = prevRow->down;
-            }
-            prevRow->down = rowAdded[0];
-            rowAdded[0]->up = prevRow;
-        }
+        delete[] rowAdded; // Clean up temporary array to avoid memory leak
     }
     void insertDownRow() {
+        if (!currentActive) return;
         int size = getcolLength();
         NewNode** rowAdded = new NewNode * [size];
         for (int i = 0; i < 5; i++) {
@@ -157,6 +157,7 @@ public:
         return size;
 	}
     void insertColumnLeft() {
+        if (!currentActive) return;
         int size = getRowLength();
         NewNode** columnAdded = new NewNode * [size];
 
@@ -190,9 +191,8 @@ public:
             first = columnAdded[0];
         }
     }
-
-    
     void insertColuuumnRight() {
+        if (!currentActive) return;
 		int size = getRowLength();
         NewNode** columnAdded = new NewNode * [size];
         for (int i = 0; i < size; i++) {
@@ -237,8 +237,126 @@ public:
             }
         }
     }
+    void RemoveRow() {
+        if (!currentActive) return;  
 
-   
+        NewNode* currentRow = currentActive;
+        NewNode* prevRow = nullptr;
+        NewNode* nextFirst = nullptr;
+
+        while (currentRow->left) {
+            currentRow = currentRow->left;
+        }
+
+        if (!currentRow->down) { 
+            while (currentRow->right) {
+                prevRow = currentRow->up;
+                currentRow = currentRow->right;
+
+                if (prevRow) {
+                    prevRow = prevRow->right;
+                }
+            }
+
+            if (prevRow) {
+                prevRow->down = nullptr;
+            }
+        }
+        else {
+            nextFirst = currentRow->down; 
+            while (currentRow) {
+                NewNode* nextCell = currentRow->right;
+
+                if (currentRow->up) {
+                    currentRow->up->down = currentRow->down;
+                }
+                if (currentRow->down) {
+                    currentRow->down->up = currentRow->up;
+                }
+
+                delete currentRow;
+                currentRow = nextCell;
+            }
+        }
+
+        
+        first = nextFirst;
+
+        currentActive = first;
+    }
+    
+    void RemoveColumn() {
+        if (!currentActive) return; 
+
+        NewNode* columnNode = currentActive;
+
+        while (columnNode->up) {
+            columnNode = columnNode->up;
+        }
+
+        if (columnNode == first) {
+            if (first->right) {
+                first = first->right;
+            }
+            else {
+                first = nullptr;
+            }
+        }
+
+        while (columnNode) {
+            NewNode* nextNode = columnNode->down;
+
+            if (columnNode->left) {
+                columnNode->left->right = columnNode->right;
+            }
+
+            if (columnNode->right) {
+                columnNode->right->left = columnNode->left;
+            }
+
+            if (columnNode == currentActive) {
+                if (currentActive->left) {
+                    currentActive = currentActive->left;
+                }
+                else if (currentActive->right) {
+                    currentActive = currentActive->right;
+                }
+                else {
+                    currentActive = nullptr;
+                }
+            }
+
+            delete columnNode;
+            columnNode = nextNode;
+        }
+    }
+
+    void clearRow() {
+        if (currentActive == nullptr) return;  
+        NewNode* currentRow = currentActive;
+
+        while (currentRow && currentRow->left) {
+            currentRow = currentRow->left;
+        }
+
+        // CLEARING     
+        while (currentRow) {
+            currentRow->data = ' ';
+            currentRow = currentRow->right;
+        }
+    }
+    void clearColumn() {
+        if (currentActive == nullptr) return;
+        NewNode* columnNode = currentActive;
+        while (columnNode->up && columnNode) {
+			columnNode = columnNode->up;
+        }
+		// CLEARING
+		while (columnNode) {
+			columnNode->data = ' ';
+			columnNode = columnNode->down;
+        }
+    }
 };
 
 
