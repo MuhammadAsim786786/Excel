@@ -71,93 +71,162 @@ void gridDisplay(int width, int height, int rows, int cols)
 		}
 	}
 }
-void createSheet() {
-	Excel miniExcel;
+void createSheet(Excel&miniExcel) {
 	miniExcel.printSheet();
 }
+indices getIndex() {
+	int rpos, cpos;
+	getRowColbyLeftClick(rpos, cpos);
 
+	int cellWidth = 6;
+	int cellHeight = 1;
+
+	indices A;
+	A.row = rpos / cellHeight;
+	A.col = cpos / cellWidth;
+	return A;
+}
+
+void enterValueInCell(Excel&miniExcel) {
+	indices A = getIndex();
+	int value;
+	cout << "Enter value for cell (" << A.row << ", " << A.col << "): ";
+	cin >> value;
+	cout.flush();
+	miniExcel.setValueAt(A.row, A.col, value);
+}
 
 int main()
-{/*
-	SetClr(WHITE, BLACK);
+{
+    Excel miniExcel;
+    int choice;
 
-	int width = 50, height = 12;
-	int rows = 3, cols = 10;
-	int bRows = height / rows;
-	int bCols = width / cols;
+    do {
+        cout << "\n=== Excel Application Menu ===\n";
+        cout << "1. Create a new sheet\n";
+        cout << "2. Load an existing sheet (not implemented yet)\n";
+        cout << "3. Enter value in a cell\n";
+        cout << "4. Print sheet\n";
+        cout << "5. Insert row above\n";
+        cout << "6. Insert row below\n";
+        cout << "7. Insert column to the left\n";
+        cout << "8. Insert column to the right\n";
+        cout << "9. Remove row\n";
+        cout << "10. Remove column\n";
+        cout << "11. Clear row\n";
+        cout << "12. Clear column\n";
+        cout << "13. Get range sum\n";
+        cout << "14. Get range average\n";
+        cout << "15. Get range min\n";
+        cout << "16. Get range max\n";
+        cout << "17. Copy range\n";
+        cout << "18. Paste range\n";
+        cout << "19. Cut range\n";
+        cout << "20. Save sheet\n";
+        cout << "21. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
 
-	gridDisplay(width, height, rows, cols);
+        indices start, end;
+        int value;
 
-	cout << endl << "Click anywhere to get the cursor position!" << endl;
+        switch (choice) {
+        case 1:
+            createSheet(miniExcel);
+            
+            break;
+        case 3:
+            system("cls");
+            miniExcel.printSheet();
+            enterValueInCell(miniExcel);
+            system("cls");
+			miniExcel.printSheet();
+            break;
+        case 4:
+            miniExcel.printSheet();
+            break;
+        case 5:
+            
+            miniExcel.insertAboveRow();
+            break;
+        case 6:
+           
+            miniExcel.insertDownRow();
+            break;
+        case 7:
+           
+            miniExcel.insertColumnLeft();
+            break;
+        case 8:
+           
+            miniExcel.insertColuuumnRight();
+            break;
+        case 9:
+            
+            miniExcel.RemoveRow();
+            break;
+        case 10:
+            
+            miniExcel.RemoveColumn();
+            break;
+        case 11:
+            start = getIndex();
+            miniExcel.clearRow();
+            break;
+        case 12:
+            start = getIndex();
+            miniExcel.clearColumn();
+            break;
+        case 13:
+            system("cls");
+            miniExcel.printSheet();
+            start = getIndex();
+            end = getIndex();
+            cout << "Range Sum: " << miniExcel.getRangeSum(start, end) << endl;
+            break;
+        case 14:
+            system("cls");
+			miniExcel.printSheet();
+            start = getIndex();
+            end = getIndex();
+            cout << "Range Average: " << miniExcel.getAverage(start, end) << endl;
+            break;
+        case 15:
+            start = getIndex();
+            end = getIndex();
+            cout << "Range Min: " << miniExcel.getRangeMin(start, end) << endl;
+            break;
+        case 16:
+            start = getIndex();
+            end = getIndex();
+            cout << "Range Max: " << miniExcel.getRangeMax(start, end) << endl;
+            break;
+        case 17:
+            start = getIndex();
+            end = getIndex();
+            miniExcel.copy(start, end);
+            break;
+        case 18:
+            start = getIndex();
+            end = getIndex();
+            miniExcel.paste(start,end);
+            break;
+        case 19:
+            start = getIndex();
+            end = getIndex();
+            miniExcel.cut(start, end);
+            break;
+        case 20:
+            miniExcel.saveSheet("TextFile1.txt");
+            cout << "Sheet saved as TextFile1.txt\n";
+            break;
+        case 21:
+            cout << "Exiting the program...\n";
+            break;
+        default:
+            cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 21);
 
-	while (true)
-	{
-		int row = 0, col = 0;
-		getRowColbyLeftClick(row, col);
-
-		
-		int gridRow = row / bRows;
-		int gridCol = col / bCols;
-
-	
-		system("cls");
-
-
-		gridDisplay(width, height, rows, cols);
-
-		gotoRowCol(row, col);
-
-	
-		if (gridRow < rows && gridCol < cols)
-		{
-			SetClr(GREEN, BLACK);
-
-			cout << "You clicked on grid row: " << gridRow << " and grid column: " << gridCol << endl;
-		}
-		else
-		{
-			SetClr(RED, BLACK);
-			cout << "Click was outside the grid!" << endl;
-		}
-	}*/
-	
-	
-	Excel miniExcel;
-	miniExcel.printSheet();
-	miniExcel.insertDownRow();
-	indices A;
-	indices B;
-	A.row = 0;
-	A.col = 0;
-	B.row = 1;
-	B.col = 4;
-	int sum=miniExcel.getRangeSum(A,B);
-	int average = miniExcel.getAverage(A, B);
-	cout << average;
-	system("cls");
-	
-	miniExcel.printSheet();
-	miniExcel.saveSheet("TextFile1.txt");
-		/*
-	system("cls");
-	miniExcel.cut(A,B);
-	A.row = 2;
-	A.col = 0;
-	B.row = 3;
-	B.col = 4;	
-	miniExcel.paste(A, B);
-	miniExcel.printSheet();
-
-	miniExcel.RemoveColumn();
-	miniExcel.insertDownRow();
-	miniExcel.RemoveColumn();
-	miniExcel.RemoveRow();
-	miniExcel.clearRow();
-	miniExcel.clearColumn();
-	*/
-
-
-
-	
-	return 0;
+    return 0;
 }

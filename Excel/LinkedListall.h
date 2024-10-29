@@ -30,13 +30,9 @@ struct NewNode {
     NewNode* up;
     NewNode* down;
 
-    NewNode(char initial) {
-        if (initial == ' ' || initial == '\0') {
-            data = 0;
-        }
-        else {
-            data = initial - '0';
-        }
+    NewNode(int initial) {
+   
+        data = initial;
         right = nullptr;
         left = nullptr;
         up = nullptr;
@@ -69,7 +65,7 @@ public:
        
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                grid[i][j] = new NewNode('1');
+                grid[i][j] = new NewNode(INT_MAX);
             }
         }
         for (int i = 0; i < 5; i++) {
@@ -131,46 +127,45 @@ public:
         int size = getcolLength();
         NewNode** rowAdded = new NewNode * [size];
 
-        // Step 1: Initialize each cell in the new row
+    
         for (int i = 0; i < size; i++) {
-            rowAdded[i] = new NewNode(' ');
+            rowAdded[i] = new NewNode(INT_MAX);
         }
 
-        // Step 2: Traverse to the leftmost cell of the current active row
+
         NewNode* currentActiveRow = currentActive;
         while (currentActiveRow && currentActiveRow->left) {
             currentActiveRow = currentActiveRow->left;
         }
 
-        // Step 3: Link each cell in the new row with the current row
+
         for (int i = 0; i < size; i++) {
-            // Link downwards to the current active row
+
             rowAdded[i]->down = currentActiveRow;
             if (currentActiveRow) {
                 currentActiveRow->up = rowAdded[i];
                 currentActiveRow = currentActiveRow->right;
             }
 
-            // Link horizontally within the new row
+
             if (i > 0) {
                 rowAdded[i]->left = rowAdded[i - 1];
                 rowAdded[i - 1]->right = rowAdded[i];
             }
         }
 
-        // Step 4: Update the 'first' pointer if we are adding at the top
         if (currentActive == first) {
             first = rowAdded[0];
         }
 
-        delete[] rowAdded; // Clean up temporary array to avoid memory leak
+        delete[] rowAdded; 
     }
     void insertDownRow() {
         if (!currentActive) return;
         int size = getcolLength();
         NewNode** rowAdded = new NewNode * [size];
         for (int i = 0; i < 5; i++) {
-            rowAdded[i] = new NewNode(' ');
+            rowAdded[i] = new NewNode(INT_MAX);
         }
 
         NewNode* currentActiveRow = currentActive;
@@ -439,9 +434,13 @@ public:
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
                 noOfNodes++;
-                if (rowNode->data != ' ') {
+                if(rowNode->data==INT_MAX){
+                    sum += 0;
+                }
+                else {
                     sum += rowNode->data;
                 }
+                
                 rowNode = rowNode->right;
             }
             currentNode = currentNode->down;
@@ -496,6 +495,8 @@ public:
 
         return count;
     }
+    
+    
     int getRangeMin(indices start, indices end) {
         int minVal = INT_MAX;
         int rowLength = getRowLength();
@@ -524,7 +525,7 @@ public:
         for (int i = start.row; i <= end.row && currentNode; i++) {
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
-                if (rowNode->data != ' ') { 
+                if (rowNode->data !=INT_MAX) { 
                     minVal = min(minVal, rowNode->data); 
                 }
                 rowNode = rowNode->right;
@@ -734,6 +735,32 @@ public:
         
         cout << "Sheet saved to " << TextFile1 << endl;
     }
+
+    void setValueAt(int row, int col, int value) {
+        int validRowSize = getRowLength();
+		int validColSize = getcolLength();
+        if (row >= validRowSize || col >= validColSize || row < 0 || col < 0) {
+            cout << "Invalid cell position." << endl;
+            return;
+        }
+
+        NewNode* target = first;
+        for (int i = 0; i < row; i++) {
+            if (target) target = target->down;
+        }
+        for (int j = 0; j < col; j++) {
+            if (target) target = target->right;
+        }
+
+        if (target) {
+            target->data = value;
+        }
+        else {
+            cout << "Cell not found." << endl;
+        }
+    }
+    
+    
 
 
 
