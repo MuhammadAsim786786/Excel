@@ -1,21 +1,31 @@
 #pragma once
 #include<iostream>
 using namespace std;
+static  int noOfNodes = 0;
 
-struct NewNode
-{
-    char data;
+struct NewNode {
+    int data; // Change from char to int
     NewNode* right;
     NewNode* left;
     NewNode* up;
     NewNode* down;
+
     NewNode(char initial) {
-        data = initial;
+        if (initial == ' ' || initial == '\0') {
+            data = 0; // Assign a default value for empty
+        }
+        else {
+            data = initial - '0'; // Convert char to int
+        }
         right = nullptr;
         left = nullptr;
         up = nullptr;
         down = nullptr;
-    };
+    }
+};
+struct indices {
+    int row;
+    int col;
 };
 
 class Excel {
@@ -28,7 +38,7 @@ public:
        
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                grid[i][j] = new NewNode('*');
+                grid[i][j] = new NewNode('1');
             }
         }
         for (int i = 0; i < 5; i++) {
@@ -51,22 +61,23 @@ public:
         currentActive = first;
     }
 
-void displayGrid() {
-    NewNode* row = first;
-    while (row) {
-        NewNode* c = row;
-        while (c) {
-            if (c != nullptr) {
-                cout << "[ " << (c->data ? c->data : ' ') << " ] ";
-            } else {
-                cout << "[ NULL ] ";
+    void displayGrid() {
+        NewNode* row = first;
+        while (row) {
+            NewNode* c = row;
+            while (c) {
+                if (c != nullptr) {
+                    cout << "[ " << (c->data != ' ' ? c->data : ' ') << " ] ";
+                }
+                else {
+                    cout << "[ NULL ] ";
+                }
+                c = c->right;
             }
-            c = c->right;
+            cout << endl;
+            row = row->down;
         }
-        cout << endl;
-        row = row->down;
     }
-}
     int getcolLength() {
         int size = 0;
         NewNode* node = first;
@@ -83,7 +94,7 @@ void displayGrid() {
 
         // Step 1: Initialize each cell in the new row
         for (int i = 0; i < size; i++) {
-            rowAdded[i] = new NewNode('*');
+            rowAdded[i] = new NewNode(' ');
         }
 
         // Step 2: Traverse to the leftmost cell of the current active row
@@ -120,7 +131,7 @@ void displayGrid() {
         int size = getcolLength();
         NewNode** rowAdded = new NewNode * [size];
         for (int i = 0; i < 5; i++) {
-            rowAdded[i] = new NewNode('*');
+            rowAdded[i] = new NewNode(' ');
         }
 
         NewNode* currentActiveRow = currentActive;
@@ -162,7 +173,7 @@ void displayGrid() {
         NewNode** columnAdded = new NewNode * [size];
 
         for (int i = 0; i < size; i++) {
-            columnAdded[i] = new NewNode('*');
+            columnAdded[i] = new NewNode(' ');
         }
 
         NewNode* currentActiveColumnTop = currentActive;
@@ -196,7 +207,7 @@ void displayGrid() {
 		int size = getRowLength();
         NewNode** columnAdded = new NewNode * [size];
         for (int i = 0; i < size; i++) {
-            columnAdded[i] = new NewNode('*');
+            columnAdded[i] = new NewNode(' ');
         }
 
         NewNode* currentActiveColumn = currentActive;
@@ -356,6 +367,55 @@ void displayGrid() {
 			columnNode->data = ' ';
 			columnNode = columnNode->down;
         }
+    }
+    int getRangeSum(indices start, indices end) {
+        noOfNodes = 0;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return 0;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        int sum = 0;
+       
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                noOfNodes++;
+                sum += rowNode->data;
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+
+        
+        
+        return sum;
+    }
+
+    float getAverage(indices A,indices B) {
+        int sum = getRangeSum(A, B);
+        int average = sum / noOfNodes;
+        noOfNodes = 0;
+		return average;
     }
 };
 

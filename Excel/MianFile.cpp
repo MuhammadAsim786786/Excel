@@ -160,17 +160,27 @@ int main()
 		*/
 	Excel miniExcel;
 	miniExcel.displayGrid();
+	indices A;
+	indices B;
+	A.row = 0;
+	A.col = 0;
+	B.row = 1;
+	B.col = 4;
+	int sum=miniExcel.getRangeSum(A,B);
+	int average = miniExcel.getAverage(A, B);
+	cout << average;
+	/*
 	miniExcel.RemoveColumn();
 	miniExcel.insertDownRow();
 	miniExcel.RemoveColumn();
 	miniExcel.RemoveRow();
 	miniExcel.clearRow();
 	miniExcel.clearColumn();
+	*/
 
 
 
 
-	system("cls");
-	miniExcel.displayGrid();
+	
 	return 0;
 }
