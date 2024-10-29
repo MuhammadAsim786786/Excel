@@ -1,10 +1,14 @@
 #pragma once
 #include<iostream>
+#include<queue>
 using namespace std;
 static  int noOfNodes = 0;
 
+static queue<int> copyQueue;
+static queue<int> pasteQueue;
+
 struct NewNode {
-    int data; // Change from char to int
+    int data; 
     NewNode* right;
     NewNode* left;
     NewNode* up;
@@ -12,10 +16,10 @@ struct NewNode {
 
     NewNode(char initial) {
         if (initial == ' ' || initial == '\0') {
-            data = 0; // Assign a default value for empty
+            data = 0; 
         }
         else {
-            data = initial - '0'; // Convert char to int
+            data = initial - '0'; 
         }
         right = nullptr;
         left = nullptr;
@@ -33,6 +37,7 @@ public:
     NewNode* first;
     NewNode* currentActive;
     NewNode* grid[5][5];
+
 public:
     Excel() {
        
@@ -61,13 +66,19 @@ public:
         currentActive = first;
     }
 
-    void displayGrid() {
+    void printSheet() {
         NewNode* row = first;
         while (row) {
             NewNode* c = row;
             while (c) {
                 if (c != nullptr) {
+                    if (c->data == INT_MAX) {
+                        cout << "[ "<<"  "<<" ]";
+                    }
+                    else{
                     cout << "[ " << (c->data != ' ' ? c->data : ' ') << " ] ";
+
+                    }
                 }
                 else {
                     cout << "[ NULL ] ";
@@ -400,7 +411,9 @@ public:
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
                 noOfNodes++;
-                sum += rowNode->data;
+                if (rowNode->data != ' ') {
+                    sum += rowNode->data;
+                }
                 rowNode = rowNode->right;
             }
             currentNode = currentNode->down;
@@ -417,6 +430,262 @@ public:
         noOfNodes = 0;
 		return average;
     }
+    int getRangeCount(indices start, indices end) {
+        int count = 0;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return 0;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                if (rowNode->data != ' ') { 
+                    count++;
+                }
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+
+        return count;
+    }
+    int getRangeMin(indices start, indices end) {
+        int minVal = INT_MAX;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return 0;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                if (rowNode->data != ' ') { 
+                    minVal = min(minVal, rowNode->data); 
+                }
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+
+        if (minVal != INT_MAX) {
+            return minVal;
+        }
+        else {
+            return 0; 
+        }
+    }
+    int getRangeMax(indices start, indices end) {
+        int maxVal = INT_MIN;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return 0;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                if (rowNode->data != ' ') { // Check for valid data
+                    maxVal = max(maxVal, rowNode->data); // Update max value
+                }
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+        if (maxVal != INT_MIN) {
+			return maxVal;
+        }
+        else {
+            return 0; // Return 0 if no valid data
+        }
+    }
+    
+    void copy(indices start, indices end) {
+        while (!copyQueue.empty()) {
+            copyQueue.pop();
+        }
+        noOfNodes = 0;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        
+
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                noOfNodes++;
+                copyQueue.push(rowNode->data);
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+    }
+    void paste(indices start, indices end) {
+        while (!pasteQueue.empty()) {
+            pasteQueue.pop();
+        }
+        if (copyQueue.empty()) {
+            cout << "No data to paste. Copy data first." << endl;
+            return;
+        }
+        noOfNodes = 0;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                noOfNodes++;
+                rowNode->data=copyQueue.front();
+                copyQueue.pop();
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+    }
+   
+    
+    void cut(indices start, indices end) {
+        while (!copyQueue.empty()) {
+            copyQueue.pop();
+        }
+        noOfNodes = 0;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (start.row >= rowLength || start.col >= colLength ||
+            end.row >= rowLength || end.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < start.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < start.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+
+
+
+        for (int i = start.row; i <= end.row && currentNode; i++) {
+            NewNode* rowNode = currentNode;
+            for (int j = start.col; j <= end.col && rowNode; j++) {
+                noOfNodes++;
+                copyQueue.push(rowNode->data);
+                rowNode->data = INT_MAX; // Set data to 0 for representing empty cell
+                rowNode = rowNode->right;
+            }
+            currentNode = currentNode->down;
+        }
+
+
+    }
+
+
 };
 
 

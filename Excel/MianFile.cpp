@@ -72,6 +72,7 @@ void gridDisplay(int width, int height, int rows, int cols)
 	}
 }
 
+
 int main()
 {/*
 	SetClr(WHITE, BLACK);
@@ -117,49 +118,9 @@ int main()
 	}*/
 	
 	
-		/*LinkingList list;
-
-	
-		cout << "Inserting elements at the front:" << endl;
-		list.insertAtFront(10);
-		list.insertAtFront(20);
-		list.insertAtFront(30);
-
-		cout << "Inserting elements at the back:" << endl;
-		list.inserAtBack(40);
-		list.inserAtBack(50);
-
-
-		cout << "Displaying list after insertions:" << endl;
-		list.displayList(); 
-
-
-		cout << "Size of the list: " << list.size() << endl;
-
-
-		cout << "Testing forward iteration using the iterator in a for loop:" << endl;
-		for (iterating it(list.head); it.isValid(); ++it) {
-			cout << *it << " ";
-		}
-		cout << endl;
-
-		
-		cout << "Testing backward iteration using the iterator in a for loop:" << endl;
-		for (iterating it(list.tail); it.isValid(); --it) {
-			cout << *it << " ";
-		}
-		cout << endl;
-
-		
-		cout << "Deleting the first element:" << endl;
-		list.deleteAtFirst();
-		list.displayList(); 
-
-		
-		cout << "Is the list empty? " << (list.isEmpty() ? "Yes" : "No") << endl;
-		*/
 	Excel miniExcel;
-	miniExcel.displayGrid();
+	miniExcel.printSheet();
+	miniExcel.insertDownRow();
 	indices A;
 	indices B;
 	A.row = 0;
@@ -169,7 +130,19 @@ int main()
 	int sum=miniExcel.getRangeSum(A,B);
 	int average = miniExcel.getAverage(A, B);
 	cout << average;
-	/*
+	system("cls");
+	
+	miniExcel.printSheet();
+		/*
+	system("cls");
+	miniExcel.cut(A,B);
+	A.row = 2;
+	A.col = 0;
+	B.row = 3;
+	B.col = 4;	
+	miniExcel.paste(A, B);
+	miniExcel.printSheet();
+
 	miniExcel.RemoveColumn();
 	miniExcel.insertDownRow();
 	miniExcel.RemoveColumn();
@@ -177,7 +150,6 @@ int main()
 	miniExcel.clearRow();
 	miniExcel.clearColumn();
 	*/
-
 
 
 
