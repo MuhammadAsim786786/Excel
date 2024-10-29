@@ -71,6 +71,10 @@ void gridDisplay(int width, int height, int rows, int cols)
 		}
 	}
 }
+void createSheet() {
+	Excel miniExcel;
+	miniExcel.printSheet();
+}
 
 
 int main()
@@ -133,6 +137,7 @@ int main()
 	system("cls");
 	
 	miniExcel.printSheet();
+	miniExcel.saveSheet("TextFile1.txt");
 		/*
 	system("cls");
 	miniExcel.cut(A,B);

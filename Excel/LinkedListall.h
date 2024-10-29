@@ -1,14 +1,30 @@
 #pragma once
 #include<iostream>
 #include<queue>
+#include<sstream>
+#include<climits>
+#include<fstream>
+#include<string>
 using namespace std;
 static  int noOfNodes = 0;
 
 static queue<int> copyQueue;
 static queue<int> pasteQueue;
 
+
+
+string customColor(int r, int g, int b) {
+    stringstream ss;
+    ss << "\033[38;2;" << r << ";" << g << ";" << b << "m";
+    return ss.str();
+}
+
+
+#define RESET "\033[0m"
+
+
 struct NewNode {
-    int data; 
+    int data;
     NewNode* right;
     NewNode* left;
     NewNode* up;
@@ -16,10 +32,10 @@ struct NewNode {
 
     NewNode(char initial) {
         if (initial == ' ' || initial == '\0') {
-            data = 0; 
+            data = 0;
         }
         else {
-            data = initial - '0'; 
+            data = initial - '0';
         }
         right = nullptr;
         left = nullptr;
@@ -27,6 +43,16 @@ struct NewNode {
         down = nullptr;
     }
 };
+
+
+int currentR = 255, currentG = 255, currentB = 255;
+
+
+void setColor(int r, int g, int b) {
+    currentR = r;
+    currentG = g;
+    currentB = b;
+}
 struct indices {
     int row;
     int col;
@@ -72,6 +98,7 @@ public:
             NewNode* c = row;
             while (c) {
                 if (c != nullptr) {
+                    cout << customColor(currentR, currentG, currentB);
                     if (c->data == INT_MAX) {
                         cout << "[ "<<"  "<<" ]";
                     }
@@ -79,9 +106,10 @@ public:
                     cout << "[ " << (c->data != ' ' ? c->data : ' ') << " ] ";
 
                     }
+                    cout << RESET;
                 }
                 else {
-                    cout << "[ NULL ] ";
+                    cout << "[ Em ] ";
                 }
                 c = c->right;
             }
@@ -361,7 +389,7 @@ public:
             currentRow = currentRow->left;
         }
 
-        // CLEARING     
+      
         while (currentRow) {
             currentRow->data = ' ';
             currentRow = currentRow->right;
@@ -373,7 +401,7 @@ public:
         while (columnNode->up && columnNode) {
 			columnNode = columnNode->up;
         }
-		// CLEARING
+
 		while (columnNode) {
 			columnNode->data = ' ';
 			columnNode = columnNode->down;
@@ -539,8 +567,8 @@ public:
         for (int i = start.row; i <= end.row && currentNode; i++) {
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
-                if (rowNode->data != ' ') { // Check for valid data
-                    maxVal = max(maxVal, rowNode->data); // Update max value
+                if (rowNode->data != ' ') { 
+                    maxVal = max(maxVal, rowNode->data); 
                 }
                 rowNode = rowNode->right;
             }
@@ -550,7 +578,7 @@ public:
 			return maxVal;
         }
         else {
-            return 0; // Return 0 if no valid data
+            return 0; 
         }
     }
     
@@ -668,22 +696,45 @@ public:
             }
         }
 
-
-
-
         for (int i = start.row; i <= end.row && currentNode; i++) {
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
                 noOfNodes++;
                 copyQueue.push(rowNode->data);
-                rowNode->data = INT_MAX; // Set data to 0 for representing empty cell
+                rowNode->data = INT_MAX; 
                 rowNode = rowNode->right;
             }
             currentNode = currentNode->down;
         }
-
-
     }
+    void saveSheet(const string& TextFile1) {
+        ofstream out(TextFile1);
+        if (!out) {
+            cout << "Error opening file for saving."<<endl;
+            return;
+        }
+
+        if (first == nullptr) {
+            cout << "Sheet is already" << endl;
+            return;
+        }
+
+        NewNode* row = first;
+        while (row) {
+            NewNode* col = row;
+            while (col) {
+                out << "[ " << col->data << " ] ";
+               col = col->right;
+            }
+            out << "\n";
+            row = row->down;
+        }
+
+     
+        
+        cout << "Sheet saved to " << TextFile1 << endl;
+    }
+
 
 
 };
