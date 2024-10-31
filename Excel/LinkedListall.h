@@ -241,7 +241,7 @@ public:
 		int size = getRowLength();
         NewNode** columnAdded = new NewNode * [size];
         for (int i = 0; i < size; i++) {
-            columnAdded[i] = new NewNode(' ');
+            columnAdded[i] = new NewNode(INT_MAX);
         }
 
         NewNode* currentActiveColumn = currentActive;
@@ -377,7 +377,9 @@ public:
     }
 
     void clearRow() {
+		
         if (currentActive == nullptr) return;  
+
         NewNode* currentRow = currentActive;
 
         while (currentRow && currentRow->left) {
@@ -386,10 +388,50 @@ public:
 
       
         while (currentRow) {
-            currentRow->data = ' ';
+            currentRow->data = INT_MAX;
             currentRow = currentRow->right;
         }
     }
+    void calculateCurrent(indices Cell) {
+        if (currentActive == nullptr) return;
+        int rowLength = getRowLength();
+        int colLength = getcolLength();
+
+        if (Cell.row >= rowLength || Cell.col >= colLength) {
+            cout << "You entered invalid indices. Exiting......." << endl;
+            return;
+        }
+
+        NewNode* firstNode = first;
+        for (int i = 0; i < Cell.row; i++) {
+            if (firstNode) {
+                firstNode = firstNode->down;
+            }
+        }
+
+        NewNode* currentNode = firstNode;
+        for (int j = 0; j < Cell.col; j++) {
+            if (currentNode) {
+                currentNode = currentNode->right;
+            }
+        }
+
+    
+        if (currentNode) {
+            currentActive = currentNode;
+            cout << "Current active cell set to (" << Cell.row << ", " << Cell.col << ") with value: ";
+            if (currentNode->data == INT_MAX) {
+                cout << "Empty" << endl;
+            }
+            else {
+                cout << currentNode->data << endl;
+            }
+        }
+        else {
+            cout << "Cell at (" << Cell.row << ", " << Cell.col << ") is out of bounds." << endl;
+        }
+    }
+
     void clearColumn() {
         if (currentActive == nullptr) return;
         NewNode* columnNode = currentActive;
@@ -398,7 +440,7 @@ public:
         }
 
 		while (columnNode) {
-			columnNode->data = ' ';
+			columnNode->data = INT_MAX;
 			columnNode = columnNode->down;
         }
     }
@@ -433,11 +475,12 @@ public:
         for (int i = start.row; i <= end.row && currentNode; i++) {
             NewNode* rowNode = currentNode;
             for (int j = start.col; j <= end.col && rowNode; j++) {
-                noOfNodes++;
+                
                 if(rowNode->data==INT_MAX){
                     sum += 0;
                 }
                 else {
+                    noOfNodes++;
                     sum += rowNode->data;
                 }
                 
@@ -711,12 +754,12 @@ public:
     void saveSheet(const string& TextFile1) {
         ofstream out(TextFile1);
         if (!out) {
-            cout << "Error opening file for saving."<<endl;
+            cout << "Error opening file for saving." << endl;
             return;
         }
 
         if (first == nullptr) {
-            cout << "Sheet is already" << endl;
+            cout << "Sheet is empty" << endl;
             return;
         }
 
@@ -724,15 +767,18 @@ public:
         while (row) {
             NewNode* col = row;
             while (col) {
-                out << "[ " << col->data << " ] ";
-               col = col->right;
+                if (col->data == INT_MAX) {
+                    out << "[   ] "; 
+                }
+                else {
+                    out << "[ " << col->data << " ] ";
+                }
+                col = col->right;
             }
             out << "\n";
             row = row->down;
         }
 
-     
-        
         cout << "Sheet saved to " << TextFile1 << endl;
     }
 
@@ -760,6 +806,7 @@ public:
         }
     }
     
+
     
 
 
