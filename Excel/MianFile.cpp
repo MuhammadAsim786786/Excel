@@ -127,7 +127,12 @@ int main()
         cout << "18. Paste range\n";
         cout << "19. Cut range\n";
         cout << "20. Save sheet\n";
-        cout << "21. Exit\n";
+        cout << "21. Save as HTML sheet\n";
+        cout << "22. Insert cell by right shift\n";
+        cout << "23. Insert cell by down shift\n";
+        cout << "24. Delete cell by left shift\n";
+        cout << "25. Delete cell by up shift\n";
+        cout << "26. Exit\n";
         cout << "Enter your choice: ";
 
         cin.clear();
@@ -138,6 +143,7 @@ int main()
         switch (choice)
         {
         case 1:
+			system("cls");
             createSheet(miniExcel);
             break;
         case 3:
@@ -152,15 +158,23 @@ int main()
             miniExcel.printSheet();
             break;
         case 5:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
             miniExcel.insertAboveRow();
             break;
         case 6:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
             miniExcel.insertDownRow();
             break;
         case 7:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
             miniExcel.insertColumnLeft();
             break;
         case 8:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
             miniExcel.insertColuuumnRight();
             break;
         case 9:
@@ -229,11 +243,35 @@ int main()
             cout << "Sheet saved as TextFile1.txt\n";
             break;
         case 21:
+            miniExcel.saveSheetAsHtml("HTMLPage.htm");
+            cout << "Sheet saved as HTMLPage.htm\n";
+            break;
+        case 22:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
+            miniExcel.InsertCellByRightShift();
+            break;
+        case 23:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
+            miniExcel.InsertCellByDownShift();
+            break;
+        case 24:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
+            miniExcel.DeleteCellByLeftShift();
+            break;
+        case 25:
+            start = getIndex();
+            miniExcel.calculateCurrent(start);
+            miniExcel.DeleteCellByUpShift();
+            break;
+        case 26:
             cout << "Exiting the program...\n";
             break;
         default:
             cout << "Invalid choice. Please try again.\n";
         }
-    } while (choice != 21);
+    } while (choice != 26);
     return 0;
 }

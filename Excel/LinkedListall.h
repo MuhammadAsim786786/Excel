@@ -807,8 +807,150 @@ public:
     }
     
 
+
+    void saveSheetAsHtml(const string& filename) {
+        ofstream out(filename);
+        if (!out) {
+            cout << "Error opening file for saving HTML." << endl;
+            return;
+        }
+
+        if (first == nullptr) {
+            cout << "Sheet is empty" << endl;
+            return;
+        }
+
+       
+        out << "<!DOCTYPE html>\n<html>\n<head>\n";
+        out << "<style>\n";
+        out << "body { font-family: Arial, sans-serif; background-image: url('https://www.bing.com/images/search?view=detailV2&ccid=iS8VJpKG&id=F1263421507C376D7E8C6B74BB6F4B81D1EB0342&thid=OIP.iS8VJpKGtOa6_yrpJCplEwHaEt&mediaurl=https%3A%2F%2Fstatic.vecteezy.com%2Fsystem%2Fresources%2Fpreviews%2F005%2F182%2F612%2Foriginal%2Fgreen-abstract-geometric-shape-background-free-vector.jpg&cdnurl=https%3A%2F%2Fth.bing.com%2Fth%2Fid%2FR.892f15269286b4e6baff2ae9242a6513%3Frik%3DQgPr0YFLb7t0aw%26pid%3DImgRaw%26r%3D0&exph=1220&expw=1920&q=background+images&simid=608008396086520768&FORM=IRPRST&ck=AC46CDFC8DE41D62951C44A00B88C578&selectedIndex=18&itb=0&cw=914&ch=941&ajaxhist=0&ajaxserp=0'); background-size: cover; margin: 0; padding: 20px; }\n";
+        out << "h2 { color: #444; text-align: center; margin-top: 20px; }\n";
+        out << "table { border-collapse: collapse; width: 80%; margin: 0 auto; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }\n";
+        out << "table, th, td { border: 2px solid #555; }\n";
+        out << "th, td { padding: 15px; text-align: center; font-size: 18px; }\n";
+        out << "th { background-color: #4CAF50; color: white; font-weight: bold; }\n";
+        out << "td { background-color: rgba(255, 255, 255, 0.9); color: #333; }\n";
+        out << "td.empty-cell { background-color: rgba(240, 240, 240, 0.9); color: #aaa; }\n";
+        out << "tr:nth-child(even) td { background-color: rgba(255, 255, 255, 0.8); }\n";
+        out << "</style>\n";
+        out << "<title>Sheet</title>\n";
+        out << "</head>\n<body>\n";
+
+    
+        out << "<h2>Excel Sheet</h2>\n";
+        out << "<table>\n";
+
+   
+        NewNode* row = first;
+        while (row) {
+            out << "<tr>\n";
+            NewNode* col = row;
+            while (col) {
+                if (col->data == INT_MAX) {
+                    out << "<td class='empty-cell'>&nbsp;</td>";
+                }
+                else {
+                    out << "<td>" << col->data << "</td>";
+                }
+                col = col->right;
+            }
+            out << "</tr>\n";
+            row = row->down;
+        }
+        out << "</table>\n";
+
+ 
+        out << "</body>\n</html>";
+
+        cout << "Sheet saved to HTML file: " << filename << endl;
+    }
+    void InsertCellByRightShift() {
+        if (!currentActive) {
+            cout << "No active cell to insert by right shift." << endl;
+            return;
+        }
+
+        NewNode* tempo = new NewNode(INT_MAX); 
+        tempo->data = INT_MAX; 
+
+     
+        tempo->right = currentActive->right;
+        currentActive->right = tempo;
+
+     
+        NewNode* temp = currentActive;
+        while (temp->right) {
+            swap(temp->data, temp->right->data);
+            temp = temp->right;
+        }
+
+        cout << "Cell inserted by right shift." << endl;
+    }
+
+    void InsertCellByDownShift() {
+        if (!currentActive) {
+            cout << "No active cell to insert by down shift." << endl;
+            return;
+        }
+
+        NewNode* tempo = new NewNode(INT_MAX);
     
 
+
+        tempo->down = currentActive->down;
+        currentActive->down = tempo;
+
+    
+        NewNode* temp = currentActive;
+        while (temp->down) {
+            swap(temp->data, temp->down->data);
+            temp = temp->down;
+        }
+
+        cout << "Cell inserted by down shift." << endl;
+    }
+
+    void DeleteCellByLeftShift() {
+        if (!currentActive || !currentActive->right) {
+            cout << "No cell to delete by left shift." << endl;
+            return;
+        }
+
+  
+        NewNode* temp = currentActive;
+        while (temp->right) {
+            temp->data = temp->right->data;
+            if (!temp->right->right) { 
+                delete temp->right;
+                temp->right = nullptr;
+                break;
+            }
+            temp = temp->right;
+        }
+
+        cout << "Cell deleted by left shift." << endl;
+    }
+
+    void DeleteCellByUpShift() {
+        if (!currentActive || !currentActive->down) {
+            cout << "No cell to delete by up shift." << endl;
+            return;
+        }
+
+  
+        NewNode* temp = currentActive;
+        while (temp->down) {
+            temp->data = temp->down->data;
+            if (!temp->down->down) { 
+                delete temp->down;
+                temp->down = nullptr;
+                break;
+            }
+            temp = temp->down;
+        }
+
+        cout << "Cell deleted by up shift." << endl;
+    }
 
 
 };
